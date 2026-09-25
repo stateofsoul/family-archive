@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Семейный архив{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">К содержимому</a>
+<header class="header"><a class="brand" href="{{ url_for('index') }}"><span class="brand-mark" aria-hidden="true">СА</span> Семейный архив</a><span class="demo-label">Учебный проект</span></header>
+<main id="main" class="container">
+{% for message in get_flashed_messages() %}<div class="notice" role="status">{{ message }}</div>{% endfor %}
+{% block content %}{% endblock %}
+</main>
+<footer class="footer"><span>От семейной истории к архивному запросу</span><span>Для демонстрации используйте вымышленные данные</span></footer>
+</body></html>
