@@ -1,14 +1,93 @@
 {% extends 'base.html' %}
-{% block title %}Новая заявка · Семейный архив{% endblock %}
+{% block title %}Новая заявка | Семейный архив{% endblock %}
 {% block content %}
-<a class="back" href="{{ url_for('index') }}">← Все заявки</a><p class="eyebrow">ПЕРВЫЙ ШАГ</p><h1 class="page-title">Начнём с того,<br>что вы уже знаете.</h1>
-<div class="form-layout"><section class="panel"><h2>Новая заявка</h2><p class="muted">Обязательные поля отмечены звёздочкой.</p>
-{% if errors %}<div class="error-summary" role="alert" tabindex="-1"><strong>Проверьте заполнение</strong><ul>{% for field, message in errors.items() %}<li><a href="#{{ field }}">{{ message }}</a></li>{% endfor %}</ul></div>{% endif %}
-<form method="post" data-request-form>
-<input type="hidden" name="csrf" value="{{ session.csrf }}"><input type="hidden" name="submission" value="{{ submission }}">
-{% for field, label, hint, limit in [('person', 'Имя или фамилия *', 'Например, семья Соколовых', 120), ('region', 'Место поиска *', 'Город, село или область', 120), ('period', 'Примерный период', 'Например, 1890-1910 годы. Можно оставить пустым', 60)] %}
-<div class="field"><label for="{{ field }}">{{ label }}</label><input id="{{ field }}" name="{{ field }}" value="{{ values.get(field, '') }}" maxlength="{{ limit }}" {% if field != 'period' %}required minlength="2"{% endif %} aria-describedby="{{ field }}-hint{% if errors.get(field) %} {{ field }}-error{% endif %}" {% if errors.get(field) %}aria-invalid="true"{% endif %}><small id="{{ field }}-hint">{{ hint }}</small>{% if errors.get(field) %}<p class="field-error" id="{{ field }}-error">{{ errors[field] }}</p>{% endif %}</div>{% endfor %}
-<div class="field"><label for="details">Что уже известно *</label><textarea id="details" name="details" rows="6" minlength="20" maxlength="2000" required aria-describedby="details-hint{% if errors.get('details') %} details-error{% endif %}" {% if errors.get('details') %}aria-invalid="true"{% endif %}>{{ values.get('details', '') }}</textarea><div class="field-meta"><small id="details-hint">От 20 до 2000 символов. Укажите, откуда взяты сведения.</small><small id="counter">{{ values.get('details', '')|length }}/2000</small></div>{% if errors.get('details') %}<p class="field-error" id="details-error">{{ errors.details }}</p>{% endif %}</div>
-<div class="actions"><button class="button" type="submit">Сохранить заявку <span aria-hidden="true">↗</span></button><a href="{{ url_for('index') }}">Отмена</a></div>
-</form></section><aside class="aside-note"><span class="note-number">01 / ПОДГОТОВКА</span><h2>Не обязательно<br>знать всё сразу.</h2><p>Достаточно фамилии, места и небольшой истории. Если дата неизвестна, оставьте поле периода пустым.</p><hr><h3>Что произойдёт дальше</h3><ol><li>Сохраним сведения в заявке.</li><li>Соберём черновик обращения.</li><li>Вы проверите текст перед отправкой.</li></ol><p class="small">Сервис не отправляет письма в архивы автоматически.</p></aside></div>
+<a class="back" href="{{ url_for('index') }}">Все заявки</a>
+<p class="eyebrow">ПЕРВЫЙ ШАГ</p>
+<h1 class="page-title">Начнём с того,<br>что вы уже знаете.</h1>
+
+<div class="form-layout">
+  <section class="panel">
+    <h2>Новая заявка</h2>
+    <p class="muted">Обязательные поля отмечены звёздочкой.</p>
+
+    {% if errors %}
+      <div class="error-summary" role="alert" tabindex="-1">
+        <strong>Проверьте заполнение</strong>
+        <ul>
+          {% for field, message in errors.items() %}
+            <li><a href="#{{ field }}">{{ message }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <form method="post" data-request-form>
+      <input type="hidden" name="csrf" value="{{ session.csrf }}">
+      <input type="hidden" name="submission" value="{{ submission }}">
+
+      {% for field, label, hint, limit in [
+        ('person', 'Имя или фамилия *', 'Например, семья Соколовых', 120),
+        ('region', 'Место поиска *', 'Город, село или область', 120),
+        ('period', 'Примерный период', 'Например, 1890-1910 годы. Можно оставить пустым', 60)
+      ] %}
+        <div class="field">
+          <label for="{{ field }}">{{ label }}</label>
+          <input
+            id="{{ field }}"
+            name="{{ field }}"
+            value="{{ values.get(field, '') }}"
+            maxlength="{{ limit }}"
+            {% if field != 'period' %}required minlength="2"{% endif %}
+            aria-describedby="{{ field }}-hint{% if errors.get(field) %} {{ field }}-error{% endif %}"
+            {% if errors.get(field) %}aria-invalid="true"{% endif %}
+          >
+          <small id="{{ field }}-hint">{{ hint }}</small>
+          {% if errors.get(field) %}
+            <p class="field-error" id="{{ field }}-error">{{ errors[field] }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+      <div class="field">
+        <label for="details">Что уже известно *</label>
+        <textarea
+          id="details"
+          name="details"
+          rows="6"
+          minlength="20"
+          maxlength="2000"
+          required
+          aria-describedby="details-hint{% if errors.get('details') %} details-error{% endif %}"
+          {% if errors.get('details') %}aria-invalid="true"{% endif %}
+        >{{ values.get('details', '') }}</textarea>
+        <div class="field-meta">
+          <small id="details-hint">От 20 до 2000 символов. Укажите, откуда взяты сведения.</small>
+          <small id="counter">{{ values.get('details', '')|length }}/2000</small>
+        </div>
+        {% if errors.get('details') %}
+          <p class="field-error" id="details-error">{{ errors.details }}</p>
+        {% endif %}
+      </div>
+
+      <div class="actions">
+        <button class="button" type="submit">Сохранить заявку</button>
+        <a href="{{ url_for('index') }}">Отмена</a>
+      </div>
+    </form>
+  </section>
+
+  <aside class="aside-note">
+    <span class="note-number">01 / ПОДГОТОВКА</span>
+    <h2>Не обязательно<br>знать всё сразу.</h2>
+    <p>Достаточно фамилии, места и небольшой истории. Если дата неизвестна, оставьте поле периода пустым.</p>
+    <hr>
+    <h3>Что произойдёт дальше</h3>
+    <ol>
+      <li>Сохраним сведения в заявке.</li>
+      <li>Соберём черновик обращения.</li>
+      <li>Вы проверите текст перед отправкой.</li>
+    </ol>
+    <p class="small">Сервис не отправляет письма в архивы автоматически.</p>
+  </aside>
+</div>
 {% endblock %}

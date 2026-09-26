@@ -1,9 +1,67 @@
 {% extends 'base.html' %}
 {% block content %}
-<section class="hero"><div><p class="eyebrow">ЛИЧНЫЙ КАБИНЕТ / ЗАПРОСЫ</p><h1>У каждой семьи<br>есть своя история.</h1><p class="lead">Соберите известные факты, подготовьте обращение<br class="desktop-break"> и следите за ходом поиска в одном месте.</p><a class="button" href="{{ url_for('new_request') }}">Создать заявку <span aria-hidden="true">↗</span></a></div><div class="archive-art" aria-hidden="true"><div class="paper paper-back"></div><div class="paper"><div class="stamp">СЕМЕЙНЫЙ<br>АРХИВ</div><span class="paper-title">История начинается<br>с одного имени</span><div class="paper-line"></div><div class="paper-line short"></div><span class="paper-number">ДЕЛО № 001</span></div></div></section>
-<section class="stats" aria-label="Сводка заявок"><div><span>Всего заявок</span><strong>{{ total }}</strong></div>{% for status, label in statuses.items() %}<div><span>{{ label }}</span><strong>{{ counts[status] }}</strong></div>{% endfor %}</section>
-<section class="requests"><div class="section-title"><h2>Мои заявки</h2><span class="muted">{{ rows|length }} в списке</span></div>
-<nav class="filters" aria-label="Фильтр по статусу"><a class="{{ 'active' if not selected }}" {% if not selected %}aria-current="page"{% endif %} href="{{ url_for('index') }}">Все</a>{% for status, label in statuses.items() %}<a class="{{ 'active' if selected == status }}" {% if selected == status %}aria-current="page"{% endif %} href="{{ url_for('index', status=status) }}">{{ label }}</a>{% endfor %}</nav>
-{% if rows %}<div class="request-list">{% for row in rows %}<a class="request-row" href="{{ url_for('detail', request_id=row.id) }}"><span class="row-id">{{ '%03d'|format(row.id) }}</span><div class="row-main"><h3>{{ row.person }}</h3><p>{{ row.region }} · {{ row.period or 'Период не указан' }}</p></div><span class="badge {{ row.status }}">{{ statuses[row.status] }}</span><span class="row-date">{{ row.created }}</span><span aria-hidden="true">↗</span></a>{% endfor %}</div>
-{% else %}<div class="empty"><span class="empty-icon" aria-hidden="true">＋</span><h3>{{ 'Здесь пока нет заявок' if not selected else 'Заявок с этим статусом нет' }}</h3><p>Начните с имени, места и нескольких известных фактов.</p><a href="{{ url_for('new_request') }}">Добавить первую историю →</a></div>{% endif %}</section>
+<section class="hero">
+  <div>
+    <p class="eyebrow">ЗАЯВКИ В АРХИВ</p>
+    <h1>У каждой семьи<br>есть своя история.</h1>
+    <p class="lead">Соберите известные факты, подготовьте обращение<br class="desktop-break"> и отмечайте статус своих заявок.</p>
+    <a class="button" href="{{ url_for('new_request') }}">Создать заявку</a>
+  </div>
+
+  <div class="archive-art" aria-hidden="true">
+    <div class="paper paper-back"></div>
+    <div class="paper">
+      <div class="stamp">СЕМЕЙНЫЙ<br>АРХИВ</div>
+      <span class="paper-title">История начинается<br>с одного имени</span>
+      <div class="paper-line"></div>
+      <div class="paper-line short"></div>
+      <span class="paper-number">АРХИВНАЯ ЗАПИСЬ</span>
+    </div>
+  </div>
+</section>
+
+<section class="stats" aria-label="Сводка заявок">
+  <div><span>Всего заявок</span><strong>{{ total }}</strong></div>
+  {% for status, label in statuses.items() %}
+    <div><span>{{ label }}</span><strong>{{ counts[status] }}</strong></div>
+  {% endfor %}
+</section>
+
+<section class="requests">
+  <div class="section-title">
+    <h2>Мои заявки</h2>
+    <span class="muted">{{ rows|length }} в списке</span>
+  </div>
+
+  <nav class="filters" aria-label="Фильтр по статусу">
+    <a class="{{ 'active' if not selected }}" {% if not selected %}aria-current="page"{% endif %} href="{{ url_for('index') }}">Все</a>
+    {% for status, label in statuses.items() %}
+      <a class="{{ 'active' if selected == status }}" {% if selected == status %}aria-current="page"{% endif %} href="{{ url_for('index', status=status) }}">{{ label }}</a>
+    {% endfor %}
+  </nav>
+
+  {% if rows %}
+    <div class="request-list">
+      {% for row in rows %}
+        <a class="request-row" href="{{ url_for('detail', request_id=row.id) }}">
+          <span class="row-id">{{ '%03d'|format(row.id) }}</span>
+          <div class="row-main">
+            <h3>{{ row.person }}</h3>
+            <p>{{ row.region }}, {{ row.period or 'Период не указан' }}</p>
+          </div>
+          <span class="badge {{ row.status }}">{{ statuses[row.status] }}</span>
+          <span class="row-date">{{ row.created }}</span>
+
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+
+      <h3>{{ 'Здесь пока нет заявок' if not selected else 'Заявок с этим статусом нет' }}</h3>
+      <p>{{ 'Начните с имени, места и нескольких известных фактов.' if not selected else 'Выберите другой статус или создайте новую заявку.' }}</p>
+      <a href="{{ url_for('new_request') }}">{{ 'Создать первую заявку' if not selected else 'Создать новую заявку' }}</a>
+    </div>
+  {% endif %}
+</section>
 {% endblock %}

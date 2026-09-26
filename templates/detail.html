@@ -1,7 +1,48 @@
 {% extends 'base.html' %}
-{% block title %}{{ row.person }} · Семейный архив{% endblock %}
+{% block title %}{{ row.person }} | Семейный архив{% endblock %}
 {% block content %}
-<a class="back" href="{{ url_for('index') }}">← Все заявки</a><p class="eyebrow">ЗАЯВКА № {{ '%03d'|format(row.id) }} / {{ row.created }}</p><h1 class="page-title">{{ row.person }}</h1>
-<div class="detail-layout"><section class="panel"><div class="section-title"><h2>Исходные сведения</h2><span class="badge {{ row.status }}">{{ statuses[row.status] }}</span></div><dl><dt>Место поиска</dt><dd>{{ row.region }}</dd><dt>Период</dt><dd>{{ row.period or 'Требуется уточнение' }}</dd><dt>Что уже известно</dt><dd class="preserve">{{ row.details }}</dd></dl><form method="post" action="{{ url_for('change_status', request_id=row.id) }}"><input type="hidden" name="csrf" value="{{ session.csrf }}"><label for="status">Статус заявки</label><div class="status-controls"><select name="status" id="status">{% for value, label in statuses.items() %}<option value="{{ value }}" {% if row.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="button secondary" type="submit">Обновить</button></div></form></section>
-<section class="panel draft-panel"><p class="eyebrow">ПИСЬМО В АРХИВ</p><h2>Черновик обращения</h2><p class="muted">Собран по шаблону из вашей заявки. Проверьте факты, добавьте адресата и свои контакты.</p><textarea id="draft" class="draft" rows="16" aria-label="Текст черновика" readonly>{{ draft }}</textarea><button type="button" class="button secondary" id="copy-draft">Скопировать текст</button><p class="small" id="copy-result" role="status"></p></section></div>
+<a class="back" href="{{ url_for('index') }}">Все заявки</a>
+<p class="eyebrow">ЗАЯВКА {{ '%03d'|format(row.id) }} / {{ row.created }}</p>
+<h1 class="page-title">{{ row.person }}</h1>
+
+<div class="detail-layout">
+  <section class="panel">
+    <div class="section-title">
+      <h2>Исходные сведения</h2>
+      <span class="badge {{ row.status }}">{{ statuses[row.status] }}</span>
+    </div>
+
+    <dl>
+      <dt>Место поиска</dt>
+      <dd>{{ row.region }}</dd>
+      <dt>Период</dt>
+      <dd>{{ row.period or 'Требуется уточнение' }}</dd>
+      <dt>Что уже известно</dt>
+      <dd class="preserve">{{ row.details }}</dd>
+    </dl>
+
+    <form method="post" action="{{ url_for('change_status', request_id=row.id) }}">
+      <input type="hidden" name="csrf" value="{{ session.csrf }}">
+      <label for="status">Статус заявки</label>
+      <p class="small muted">Статус меняете вы. Ответы из архива сюда не поступают.</p>
+      <div class="status-controls">
+        <select name="status" id="status">
+          {% for value, label in statuses.items() %}
+            <option value="{{ value }}" {% if row.status == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <button class="button secondary" type="submit">Обновить</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel draft-panel">
+    <p class="eyebrow">ПИСЬМО В АРХИВ</p>
+    <h2>Черновик обращения</h2>
+    <p class="muted">Текст собран по шаблону из вашей заявки. Скопируйте его в почту, проверьте сведения и добавьте адресата и свои контакты.</p>
+    <textarea id="draft" class="draft" rows="16" aria-label="Текст черновика" readonly>{{ draft }}</textarea>
+    <button type="button" class="button secondary" id="copy-draft">Скопировать текст</button>
+    <p class="small" id="copy-result" role="status"></p>
+  </section>
+</div>
 {% endblock %}
